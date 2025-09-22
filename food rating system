@@ -1,0 +1,48 @@
+class FoodRatings 
+{
+private:
+    struct Food 
+    {
+        string name;
+        int rating;
+        string cuisine;
+        
+        bool operator<(const Food& other) const 
+        {
+            if (rating == other.rating)
+             {
+                return name < other.name;
+            }
+            return rating > other.rating;
+        }
+    };
+    
+    unordered_map<string, set<Food>> cuisineMap;
+    unordered_map<string, pair<int, string>> foodInfo;
+
+public:
+    FoodRatings(vector<string>& foods, vector<string>& cuisines, vector<int>& ratings) {
+        for (int i = 0; i < foods.size(); i++) {
+            string food = foods[i];
+            string cuisine = cuisines[i];
+            int rating = ratings[i];
+            
+            foodInfo[food] = {rating, cuisine};
+            cuisineMap[cuisine].insert({food, rating, cuisine});
+        }
+    }
+    
+    void changeRating(string food, int newRating) {
+        auto& info = foodInfo[food];
+        string cuisine = info.second;
+        int oldRating = info.first;
+        
+        cuisineMap[cuisine].erase({food, oldRating, cuisine});
+        cuisineMap[cuisine].insert({food, newRating, cuisine});
+        foodInfo[food] = {newRating, cuisine};
+    }
+    
+    string highestRated(string cuisine) {
+        return cuisineMap[cuisine].begin()->name;
+    }
+};
